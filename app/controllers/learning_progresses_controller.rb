@@ -30,6 +30,7 @@ class LearningProgressesController < ApplicationController
     end
   end
 
+  
   def check
     @word = params[:word]
     @option = params[:option]
