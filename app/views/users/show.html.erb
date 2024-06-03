@@ -1,35 +1,33 @@
-<div class="main">
-  <div class="inner">
-    <div class="user__wrapper">
-      <h2 class="page-heading">
-        <%= "#{@user.name}さんの情報"%>
-      </h2>
-      <table class="table">
-        <tbody>
-          <tr>
-            <th class="table__col1">名前</th>
-            <td class="table__col2"><%= "#{@user.name}" %></td>
-          </tr>
-          <tr>
-            <th class="table__col1">プロフィール</th>
-            <td class="table__col2"><%= "#{@user.profile}" %></td>
-          </tr>
-          <tr>
-            <th class="table__col1">所属</th>
-            <td class="table__col2"><%= "#{@user.occupation}" %></td>
-          </tr>
-          <tr>
-            <th class="table__col1">役職</th>
-            <td class="table__col2"><%= "#{@user.position}" %></td>
-          </tr>
-        </tbody>
-      </table>
-      <h2 class="page-heading">
-        <%= "#{@user.name}さんのプロトタイプ"%>
-      </h2>
-      <div class="user__card">
-        <%= render partial: "prototypes/prototype", collection: @user.prototypes, as: :prototype %>
-      </div>
-    </div>
+<h1><%= @user.name %>の学習内容</h1>
+
+<div class="user-details">
+  <div class="user-icon">
+    <%= image_tag(@user.icon.url, alt: @user.email, size: "100x100") if @user.icon.present? %>
+  </div>
+  <div class="user-info">
+    <p>名前: <%= @user.name %></p>
   </div>
 </div>
+
+<h2>学習内容</h2>
+<ul>
+  <% @learning_progresses.each do |progress| %>
+    <li>
+      <%= progress.content %>: <%= progress.progress %>%
+    </li>
+  <% end %>
+</ul>
+
+<style>
+  .user-details {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .user-icon {
+    margin-right: 20px;
+  }
+  .user-info {
+    text-align: left;
+  }
+</style>

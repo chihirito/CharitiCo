@@ -4,8 +4,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_many :prototypes
+  mount_uploader :icon, IconUploader
+  has_many :learning_progresses
   has_many :comments
 
-  validates :name, :profile, :occupation, :position, presence: true
+  validates :name, presence: true
 end

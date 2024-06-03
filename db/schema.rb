@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_10_072500) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_03_105905) do
   create_table "active_storage_attachments", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -49,6 +49,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_10_072500) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "learning_progresses", charset: "utf8", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "content"
+    t.integer "progress"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_learning_progresses_on_user_id"
+  end
+
   create_table "prototypes", charset: "utf8", force: :cascade do |t|
     t.string "title", null: false
     t.text "catch_copy", null: false
@@ -63,14 +72,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_10_072500) do
     t.string "name", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
-    t.text "profile", null: false
-    t.text "occupation", null: false
-    t.text "position", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "icon"
+    t.integer "coins"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -79,5 +87,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_10_072500) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "comments", "prototypes"
   add_foreign_key "comments", "users"
+  add_foreign_key "learning_progresses", "users"
   add_foreign_key "prototypes", "users"
 end

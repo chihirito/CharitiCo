@@ -1,11 +1,20 @@
 Rails.application.routes.draw do
-  devise_for :users
-  root to:"prototypes#index"
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
 
-  resources :prototypes do
-    resources :comments, only: [:create, :destroy]
+  root "prototypes#index"
+
+  resources :users, only: [:show]
+  resources :learning_progresses, only: [:index, :create] do
+    collection do
+      post :check
+      get :correct
+      get :incorrect 
+    end
   end
 
-  resources :users, only: :show
-end
+  resources :prototypes, only: [:index,:new, :create, :show] 
 
+  # 他のルート
+end

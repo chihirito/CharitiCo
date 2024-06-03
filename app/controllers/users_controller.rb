@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
-    @prototypes = @user.prototypes
+    @learning_progresses = @user.learning_progresses
   end
 end

@@ -1,0 +1,16 @@
+<h1>結果</h1>
+<div class="result">
+  <% if @is_correct %>
+    <p>正解！</p>
+  <% else %>
+    <p>不正解。正しい答えは <%= @word %> でした。</p>
+  <% end %>
+  <%= link_to '次の問題', learning_path %>
+</div>
+
+<style>
+  .result {
+    text-align: center;
+    margin-top: 50px;
+  }
+</style>

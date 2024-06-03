@@ -3,7 +3,7 @@
     <div class="form__wrapper">
       <h2 class="page-heading">ユーザー新規登録</h2>
 
-        <%= form_with model: @user, url: user_registration_path, local: true do |f| %>
+        <%= form_with model: @user, url: user_registration_path, local: true, html: { multipart: true } do |f| %>
 
         <div class="field">
           <%= f.label :email, "メールアドレス" %><br />
@@ -26,18 +26,8 @@
         </div>
 
         <div class="field">
-          <%= f.label :profile, "プロフィール" %><br />
-          <%= f.text_area :profile, class: :form__text, id:"user_profile" %>
-        </div>
-
-        <div class="field">
-          <%= f.label :occupation, "所属" %><br />
-          <%= f.text_area :occupation, class: :form__text, id:"user_occupation" %>
-        </div>
-
-        <div class="field">
-          <%= f.label :position, "役職" %><br />
-          <%= f.text_area :position, class: :form__text, id:"user_position" %>
+          <%= f.label :icon, "アイコン画像" %><br />
+          <%= f.file_field :icon, id:"user_icon" %>
         </div>
 
         <div class="actions">

@@ -1,9 +1,9 @@
 class PrototypesController < ApplicationController
-  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :destroy]
+  before_action :authenticate_user!, only: [:index, :new, :create, :edit, :update, :destroy]
   before_action :move_to_index, only: [:edit, :update, :destroy]
 
   def index
-    @prototypes = Prototype.all
+    @users = User.includes(:learning_progresses)
   end
 
   def new
@@ -12,8 +12,8 @@ class PrototypesController < ApplicationController
 
   def create
     @prototype = Prototype.new(prototype_params)
-    if @prototype.save 
-      redirect_to prototype_path
+    if @prototype.save
+      redirect_to prototype_path(@prototype)
     else
       render :new, status: :unprocessable_entity
     end

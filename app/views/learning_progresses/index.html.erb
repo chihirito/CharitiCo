@@ -1,0 +1,28 @@
+<h1>学習ページ</h1>
+<div class="question">
+  <p><%= @word_data['word'] %> の類語はどれですか？</p>
+  <div class="options">
+    <% @options.each do |option| %>
+      <%= button_to option, check_learning_progresses_path(word: @word_data['word'], option: option), method: :post, class: 'option-button' %>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .question {
+    text-align: center;
+    margin-top: 50px;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .option-button {
+    display: block;
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>

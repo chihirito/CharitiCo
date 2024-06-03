@@ -1,16 +1,46 @@
-<main class="main">
-  <div class="inner">
-
-    <% if user_signed_in? %>
-      <div class="greeting">
-        <%= "こんにちは、" %>
-        <%= link_to "#{current_user.name}さん", user_path(current_user), class: :greeting__link%>
+<h1>学習者一覧</h1>
+<div class="start-learning">
+  <%= link_to '学習を始める', learning_progresses_path, class: 'btn-primary' %>
+<div class="users-list">
+  <% @users.each do |user| %>
+    <div class="user-tile">
+      <div class="user-icon">
+        <%= link_to image_tag(user.icon.url, alt: user.email, size: "100x100"), user_path(user) if user.icon.present? %>
       </div>
-    <% end %>
-
-    <div class="card__wrapper">
-      <%# 投稿機能実装後、部分テンプレートでプロトタイプ投稿一覧を表示する %>
-      <%= render partial: 'prototype', collection: @prototypes, as: :prototype %>
+      <div class="user-info">
+        <h2><%= link_to user.name, user_path(user) %></h2>
+        <ul>
+          <% user.learning_progresses.each do |progress| %>
+            <li>
+              <%= progress.content %>: <%= progress.progress %>%
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
-  </div>
-</main>
+  <% end %>
+</div>
+
+<style>
+  .start-learning {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .users-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .user-tile {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    width: 200px;
+    text-align: center;
+  }
+  .user-icon {
+    margin-bottom: 10px;
+  }
+  .user-info {
+    text-align: left;
+  }
+</style>

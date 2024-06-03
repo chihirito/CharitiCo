@@ -1,0 +1,16 @@
+<h1>学習履歴の追加</h1>
+<%= form_with(model: @learning_progress, local: true) do |form| %>
+  <div class="field">
+    <%= form.label :content %>
+    <%= form.text_field :content %>
+  </div>
+
+  <div class="field">
+    <%= form.label :progress %>
+    <%= form.number_field :progress %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit '追加' %>
+  </div>
+<% end %>
