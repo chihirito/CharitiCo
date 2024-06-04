@@ -7,13 +7,10 @@ class LearningProgressesController < ApplicationController
 
   def index
     @word_data = fetch_random_word
-    if @word_data.nil? || @word_data['word'].nil?
-      flash[:alert] = "ランダムな単語の取得に失敗しました。再試行してください。"
-      Rails.logger.debug("Redirecting to root_path due to fetch_random_word failure")
+    if @word_data.blank? || @word_data['word'].blank?
       redirect_to root_path
     else
       @options = generate_options(@word_data)
-      Rails.logger.debug("Generated options: #{@options.inspect}")
     end
   end
 
@@ -30,92 +27,70 @@ class LearningProgressesController < ApplicationController
     end
   end
 
-  
   def check
-    @word = params[:word]
-    @option = params[:option]
-    @is_correct = correct_answer?(@word, @option)
-    correct_option = fetch_correct_option(@word) # 正解の選択肢を取得
-    current_user.increment!(:coins) if @is_correct # 正解した場合にコインを増やす
-     binding.pry
+    response = Net::HTTP.get(URI("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(@word)}/synonyms"))
+    synonyms = JSON.parse(response)['synonyms'] || []
+    @is_correct = synonyms.include?(@option)
+  
+    # fetch_correct_optionメソッドの処理をここに直接組み込む
+    correct_option = synonyms.sample || "No correct option found"
+  
+    current_user.increment!(:coins) if @is_correct
+  
     if @is_correct
       redirect_to correct_learning_progresses_path
     else
-      render 'incorrect', locals: { correct_option: correct_option }
+      flash[:correct_option] = correct_option
+      redirect_to incorrect_learning_progresses_path
     end
   end
+
 
   private
 
   def fetch_random_word
-    url = URI("https://wordsapiv1.p.rapidapi.com/words/?random=true")
-    https = Net::HTTP.new(url.host, url.port)
-    https.use_ssl = true
-    request = Net::HTTP::Get.new(url)
-    request["X-RapidAPI-Key"] = '9181eb53c2msh1ffb45d44a88647p16b21bjsnbaba426f557a'
-    request["X-RapidAPI-Host"] = 'wordsapiv1.p.rapidapi.com'
+    response = api_request("https://wordsapiv1.p.rapidapi.com/words/?random=true")
+    return JSON.parse(response.body) if response.is_a?(Net::HTTPSuccess)
 
-    response = https.request(request)
-    word_data = JSON.parse(response.body)
-    Rails.logger.debug("Fetched word data: #{word_data}")
-    word_data
-  rescue StandardError => e
-    Rails.logger.error("Error fetching random word: #{e.message}")
+    Rails.logger.error("Error fetching random word: #{response.message}")
     nil
   end
 
   def generate_options(word_data)
-    result = word_data['results']&.first
+    result = word_data.dig('results', 0)
     if result
-      synonyms = result['synonyms'] || []
-      correct_option = synonyms.sample(1).first # 類語から正解の単語を1つ選ぶ
-      other_words = fetch_random_words(3) # ランダムな単語を3つ取得
-      options = other_words + [correct_option] # 正解の単語を選択肢に追加
-      options.shuffle # 選択肢をシャッフルする
+      correct_option = result['synonyms'].sample
+      other_words = Array.new(3) { fetch_random_word&.dig('word') }.compact
+      (other_words + [correct_option]).shuffle
     else
-      Rails.logger.debug("No result found in word data")
       ["ダミー1", "ダミー2", "ダミー3", "ダミー4"].shuffle
     end
   end
 
-  def fetch_random_words(count)
-    words = []
-    count.times do
-      word_data = fetch_random_word
-      words << word_data['word'] if word_data && word_data['word']
-    end
-    words
-  end
-
   def correct_answer?(word, option)
-    encoded_word = URI.encode_www_form_component(word)
-    url = URI("https://wordsapiv1.p.rapidapi.com/words/#{encoded_word}/synonyms")
-    https = Net::HTTP.new(url.host, url.port)
-    https.use_ssl = true
-    request = Net::HTTP::Get.new(url)
-    request["X-RapidAPI-Key"] = '9181eb53c2msh1ffb45d44a88647p16b21bjsnbaba426f557a'
-    request["X-RapidAPI-Host"] = 'wordsapiv1.p.rapidapi.com'
-
-    response = https.request(request)
-    result = JSON.parse(response.body)
-    synonyms = result['synonyms'] || []
-
+    response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(word)}/synonyms")
+    synonyms = JSON.parse(response.body).fetch('synonyms', [])
     synonyms.include?(option)
   end
 
   def fetch_correct_option(word)
-    encoded_word = URI.encode_www_form_component(word)
-    url = URI("https://wordsapiv1.p.rapidapi.com/words/#{encoded_word}/synonyms")
-    https = Net::HTTP.new(url.host, url.port)
-    https.use_ssl = true
-    request = Net::HTTP::Get.new(url)
+    response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(word)}/synonyms")
+    synonyms = JSON.parse(response.body).fetch('synonyms', [])
+    synonyms.sample
+  end
+
+  def api_request(url)
+    uri = URI(url)
+    request = Net::HTTP::Get.new(uri)
     request["X-RapidAPI-Key"] = '9181eb53c2msh1ffb45d44a88647p16b21bjsnbaba426f557a'
     request["X-RapidAPI-Host"] = 'wordsapiv1.p.rapidapi.com'
 
-    response = https.request(request)
-    result = JSON.parse(response.body)
-    synonyms = result['synonyms'] || []
-    synonyms.sample(1).first
+    Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+      http.request(request)
+    end
+  rescue StandardError => e
+    Rails.logger.error("API request error: #{e.message}")
+    nil
   end
 
   def learning_progress_params

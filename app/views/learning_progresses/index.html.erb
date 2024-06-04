@@ -1,6 +1,8 @@
-<h1>学習ページ</h1>
+<!-- app/views/learning_progresses/index.html.erb -->
+
+<h1>Learning Page</h1>
 <div class="question">
-  <p><%= @word_data['word'] %> の類語はどれですか？</p>
+  <p>Which of the following is a synonym for <span class="word">"<%= @word_data['word'] %>"?</span></p>
   <div class="options">
     <% @options.each do |option| %>
       <%= button_to option, check_learning_progresses_path(word: @word_data['word'], option: option), method: :post, class: 'option-button' %>
@@ -12,6 +14,11 @@
   .question {
     text-align: center;
     margin-top: 50px;
+  }
+  .word {
+    display: block;
+    font-size: 24px; /* 大きな文字にする */
+    margin-top: 10px; /* 上部に余白を追加 */
   }
   .options {
     display: flex;
