@@ -23,16 +23,25 @@ Things you may want to cover:
 
 * ...
 
+
+# CharitiCo（リポジトリ/プロジェクト/OSSなどの名前）
+
+「学習すること」が「社会貢献」に直接結びつくアプリ
+
+# DEMO
+
+# Features
+
+学習量に応じて、自動的に慈善団体に寄付される
+
 ## usersテーブル
 
 | Column | Type       | Options                        |
 | ------ | ---------- | ------------------------------ |
 | email   | string | null: false |
 | encrypted_password | string | null: false |
-| name | string | null: false |
-| profile | text | null: false |
-| occupation | text | null: false |
-| position | text | null: false |
+| name 　　　　　　　　　　　　　　　　　　　　　　　　　　　　| string | null: false |
+| icon               | string | null: false |
 
 ### Association
 - has_many :prototypes
@@ -40,24 +49,23 @@ Things you may want to cover:
 
 ## prototypesテーブル
 
-| Column | Type       | Options                        |
-| ------ | ---------- | ------------------------------ |
-| title | string | null: false |
-| catch_copy | text | null: false |
-| concept | text | null: false |
-| user | references | null: false |
+| Column     | Type       | Options                        |
+| ---------- | ---------- | ------------------------------ |
+| title      | string     | null: false |
+| catch_copy | text       | null: false |
+| concept    | text       | null: false |
+| user       | references | null: false |
 
-### Association
-- belongs_to :user
+### Association - belongs_to :user
 - has_many :comments
 
 ## commentsテーブル
 
-| Column | Type       | Options                        |
-| ------ | ---------- | ------------------------------ |
-| content | text | null: false |
+| Column    | Type       | Options                        |
+| ------    | ---------- | ------------------------------ |
+| content   | text       | null: false |
 | prototype | references | null: false |
-| user | references | null: false |
+| user      | references | null: false |
 
 ### Association
 - belongs_to :user
