@@ -1,3 +1,5 @@
-<h1>Correct！</h1>
-<p>Congratulations！</p>
-<%= link_to 'Next question', learning_progresses_path, class: 'btn btn-primary' %>
+<div id="response-container">
+  <h1>Correct!</h1>
+  <p>Congratulations, you selected the correct answer!</p>
+  <%= link_to 'Try Another', learning_progresses_path, class: 'btn btn-primary' %>
+</div>

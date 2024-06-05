@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :prototypes, only: [:index,:new, :create, :show] 
+  resources :prototypes
 
   # 他のルート
 end

@@ -6,8 +6,8 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application' %> 
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:400,700,900&display=swap" rel="stylesheet">
   </head>
 
@@ -21,7 +21,7 @@
 
           <% if user_signed_in? %>
             <div class="nav__right"> 
-              <%= link_to "ログアウト", destroy_user_session_path, data: {turbo_method: :delete}, class: :nav__logout %>
+              <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: :nav__logout %>
               <%= link_to "New Proto", new_prototype_path, class: :nav__btn %>
             </div> 
           <% else %>
@@ -35,7 +35,7 @@
     </header>
     <%= yield %>
     <footer class="footer">
-      <p class="copyright">Copyright © PROTO SPACE All rights reserved.</p>
+      <p class="copyright">Copyright © CharitiCo All rights reserved.</p>
     </footer>
   </body>
 </html>

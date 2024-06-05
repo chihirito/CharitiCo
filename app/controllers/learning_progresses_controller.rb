@@ -7,7 +7,7 @@ class LearningProgressesController < ApplicationController
 
   def index
     @word_data = fetch_random_word
-    if @word_data.blank? || @word_data['word'].blank?
+    if @word_data.blank? || @word_data['word'].blank? || @word_data['results'].blank?
       redirect_to root_path
     else
       @options = generate_options(@word_data)
@@ -28,23 +28,51 @@ class LearningProgressesController < ApplicationController
   end
 
   def check
-    response = Net::HTTP.get(URI("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(@word)}/synonyms"))
-    synonyms = JSON.parse(response)['synonyms'] || []
-    @is_correct = synonyms.include?(@option)
+    @word = params[:word]
+    @option = params[:option]
   
-    # fetch_correct_optionメソッドの処理をここに直接組み込む
+    Rails.logger.debug "Word: #{@word}, Option: #{@option}" # デバッグログの追加
+  
+    response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(@word)}/synonyms")
+    if response.is_a?(Net::HTTPSuccess)
+      synonyms = JSON.parse(response.body)['synonyms'] || []
+      Rails.logger.debug "Synonyms: #{synonyms}" # デバッグログの追加
+      @is_correct = synonyms.include?(@option)
+    else
+      Rails.logger.error "API request failed with response: #{response.body}" # エラーログの追加
+      @is_correct = false
+    end
+  
     correct_option = synonyms.sample || "No correct option found"
   
     current_user.increment!(:coins) if @is_correct
   
-    if @is_correct
-      redirect_to correct_learning_progresses_path
-    else
-      flash[:correct_option] = correct_option
-      redirect_to incorrect_learning_progresses_path
+    Rails.logger.debug "is_correct: #{@is_correct}" # デバッグログの追加
+  
+    respond_to do |format|
+      format.html do
+        if @is_correct
+          Rails.logger.debug "Rendering correct template" # デバッグログの追加
+          render template: 'learning_progresses/correct'
+        else
+          flash[:correct_option] = correct_option
+          Rails.logger.debug "Rendering incorrect template with correct_option: #{correct_option}" # デバッグログの追加
+          render template: 'learning_progresses/incorrect'
+        end
+      end
+      format.turbo_stream do
+        if @is_correct
+          Rails.logger.debug "Rendering correct turbo_stream template" # デバッグログの追加
+          render template: 'learning_progresses/correct'
+        else
+          Rails.logger.debug "Rendering incorrect turbo_stream template with correct_option: #{correct_option}" # デバッグログの追加
+          render template: 'learning_progresses/incorrect', locals: { correct_option: correct_option }
+        end
+      end
     end
   end
-
+  
+  
 
   private
 
@@ -52,31 +80,18 @@ class LearningProgressesController < ApplicationController
     response = api_request("https://wordsapiv1.p.rapidapi.com/words/?random=true")
     return JSON.parse(response.body) if response.is_a?(Net::HTTPSuccess)
 
-    Rails.logger.error("Error fetching random word: #{response.message}")
-    nil
   end
 
   def generate_options(word_data)
     result = word_data.dig('results', 0)
-    if result
       correct_option = result['synonyms'].sample
       other_words = Array.new(3) { fetch_random_word&.dig('word') }.compact
       (other_words + [correct_option]).shuffle
-    else
-      ["ダミー1", "ダミー2", "ダミー3", "ダミー4"].shuffle
-    end
   end
 
-  def correct_answer?(word, option)
+  def fetch_correct_synonyms(word)
     response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(word)}/synonyms")
-    synonyms = JSON.parse(response.body).fetch('synonyms', [])
-    synonyms.include?(option)
-  end
-
-  def fetch_correct_option(word)
-    response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(word)}/synonyms")
-    synonyms = JSON.parse(response.body).fetch('synonyms', [])
-    synonyms.sample
+    return JSON.parse(response.body).fetch('synonyms', [])
   end
 
   def api_request(url)
