@@ -1,35 +1,19 @@
-<!-- app/views/learning_progresses/index.html.erb -->
-
 <h1>Learning Page</h1>
 <div class="question">
   <p>Which of the following is a synonym for <span class="word">"<%= @word_data['word'] %>"?</span></p>
   <div class="options">
-    <% @options.each do |option| %>
-      <%= button_to option, check_learning_progresses_path(word: @word_data['word'], option: option), method: :post, class: 'option-button' %>
+    <% if @options.present? %>
+      <% @options.each do |option| %>
+        <button class="option-button" data-option="<%= option %>"><%= option %></button>
+      <% end %>
+    <% else %>
+      <p>No options available. Please try again.</p>
     <% end %>
   </div>
 </div>
-
-<style>
-  .question {
-    text-align: center;
-    margin-top: 50px;
-  }
-  .word {
-    display: block;
-    font-size: 24px; /* 大きな文字にする */
-    margin-top: 10px; /* 上部に余白を追加 */
-  }
-  .options {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .option-button {
-    display: block;
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-</style>
+<input type="hidden" id="correct-option" value="<%= @correct_option %>">
+<div id="result-popup" class="hidden">
+  <p id="result-message"></p>
+  <button id="close-popup">Close</button>
+</div>
+<%= javascript_include_tag 'learning_progresses' %>

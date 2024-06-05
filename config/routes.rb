@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   root "prototypes#index"
 
   resources :users, only: [:show]
-  resources :learning_progresses, only: [:index, :create] do
+  resources :learning_progresses, only: [:index, :new, :create] do
     collection do
       post :check
       get :correct
