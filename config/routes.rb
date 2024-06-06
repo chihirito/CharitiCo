@@ -6,11 +6,13 @@ Rails.application.routes.draw do
   root "prototypes#index"
 
   resources :users, only: [:show]
-  resources :learning_progresses, only: [:index, :new, :create] do
+  resources :learning_progresses do
     collection do
       post :check
       get :correct
       get :incorrect 
+      post :increment_coins
+      get :next_question
     end
   end
 

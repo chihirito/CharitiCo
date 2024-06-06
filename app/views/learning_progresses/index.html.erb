@@ -1,19 +1,25 @@
 <h1>Learning Page</h1>
+<div id="coins-display">Coins: <%= current_user.coins %></div>
 <div class="question">
-  <p>Which of the following is a synonym for <span class="word">"<%= @word_data['word'] %>"?</span></p>
-  <div class="options">
-    <% if @options.present? %>
-      <% @options.each do |option| %>
-        <button class="option-button" data-option="<%= option %>"><%= option %></button>
+  <% if @word_data.present? && @word_data['word'].present? %>
+    <p>Which of the following is a synonym for <span class="word">"<%= @word_data['word'] %>"?</span></p>
+    <div class="options">
+      <% if @options.present? %>
+        <% @options.each do |option| %>
+          <button class="option-button" data-option="<%= option %>"><%= option %></button>
+        <% end %>
+      <% else %>
+        <p>No options available. Please try again.</p>
       <% end %>
-    <% else %>
-      <p>No options available. Please try again.</p>
-    <% end %>
-  </div>
+    </div>
+    <input type="hidden" id="correct-option" value="<%= @correct_option %>">
+  <% else %>
+    <p>Failed to load the question. Please try again.</p>
+  <% end %>
 </div>
-<input type="hidden" id="correct-option" value="<%= @correct_option %>">
 <div id="result-popup" class="hidden">
   <p id="result-message"></p>
   <button id="close-popup">Close</button>
+  <button id="next-question" class="hidden">Next Question</button>
 </div>
 <%= javascript_include_tag 'learning_progresses' %>
