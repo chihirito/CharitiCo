@@ -1,0 +1,43 @@
+/* application.css */
+@import 'material-kit';
+@import 'nucleo-icons';
+@import 'nucleo-svg';
+
+.custom-button {
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 18px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.custom-button:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.25rem;
+  border-radius: 0.3rem;
+}
+
+.btn.bg-gradient-primary {
+  background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
+  color: #fff !important;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.25rem;
+  border-radius: 0.3rem;
+}
+
+.btn.bg-gradient-primary:hover {
+  background: linear-gradient(87deg, #0fa9e6 0, #1168e6 100%) !important;
+}
+
+

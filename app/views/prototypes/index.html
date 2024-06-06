@@ -1,0 +1,20 @@
+<h1>Learner List</h1>
+<div class="users-list">
+  <% @users.each do |user| %>
+    <div class="user-tile">
+      <div class="user-icon">
+        <%= link_to image_tag(user.icon.url, alt: user.email, size: "100x100"), user_path(user) if user.icon.present? %>
+      </div>
+      <div class="user-info">
+        <h2><%= link_to user.name, user_path(user) %></h2>
+        <ul>
+          <% user.learning_progresses.each do |progress| %>
+            <li>
+              <%= progress.content %>: <%= progress.progress %>%
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>

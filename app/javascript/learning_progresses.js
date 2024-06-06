@@ -1,6 +1,11 @@
-
-
 const initLearningProgress = () => {
+  const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+  if (!csrfTokenMeta) {
+    console.error("CSRF token not found");
+    return;
+  }
+  const csrfToken = csrfTokenMeta.getAttribute('content');
+
   const questionElement = document.querySelector('.question');
   if (questionElement) {
     const buttons = document.querySelectorAll('.option-button');
@@ -17,7 +22,7 @@ const initLearningProgress = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-Token': csrfToken
           },
           body: JSON.stringify({ word: word })
         });
@@ -34,7 +39,7 @@ const initLearningProgress = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-Token': csrfToken
           }
         });
         const data = await response.json();
