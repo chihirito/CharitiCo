@@ -2,6 +2,8 @@ require_relative "boot"
 
 require "rails/all"
 
+require 'dotenv/rails-now'
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -20,5 +22,7 @@ module CharitiCo
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    config.assets.precompile += %w( *.js *.css *.svg *.eot *.woff *.ttf )
   end
 end

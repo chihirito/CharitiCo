@@ -1,17 +1,24 @@
-require 'net/http'
-require 'uri'
-require 'json'
-
 class LearningProgressesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @word_data = fetch_random_word
-    if @word_data.blank? || @word_data['word'].blank? || @word_data['results'].blank?
+    @language = params[:language]
+    @word_data = fetch_random_word(@language)
+    if @word_data.blank? || @word_data['word'].blank?
+      flash[:alert] = 'Failed to load the question. Please try again.'
       redirect_to root_path
     else
       @options = generate_options(@word_data)
+      if @options.present?
+        @correct_option = @options.find { |option| correct_option?(@word_data, option) }
+      else
+        flash[:alert] = 'Failed to generate options. Please try again.'
+        redirect_to root_path
+      end
     end
+  end
+
+  def choose_language
   end
 
   def new
@@ -27,71 +34,76 @@ class LearningProgressesController < ApplicationController
     end
   end
 
-  def check
-    @word = params[:word]
-    @option = params[:option]
-  
-    Rails.logger.debug "Word: #{@word}, Option: #{@option}" # デバッグログの追加
-  
-    response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(@word)}/synonyms")
-    if response.is_a?(Net::HTTPSuccess)
-      synonyms = JSON.parse(response.body)['synonyms'] || []
-      Rails.logger.debug "Synonyms: #{synonyms}" # デバッグログの追加
-      @is_correct = synonyms.include?(@option)
-    else
-      Rails.logger.error "API request failed with response: #{response.body}" # エラーログの追加
-      @is_correct = false
+  def increment_coins
+    current_user.increment!(:coins)
+    render json: { coins: current_user.coins }
+  end
+
+  def next_question
+    @word_data = fetch_random_word
+    if @word_data.blank? || @word_data['word'].blank?
+      render json: { error: 'Failed to fetch a new word.' }, status: :unprocessable_entity
+      return
     end
   
-    correct_option = synonyms.sample || "No correct option found"
+    @options = generate_options(@word_data)
+    @correct_option = @options.find { |option| correct_option?(@word_data, option) }
   
-    current_user.increment!(:coins) if @is_correct
-  
-    Rails.logger.debug "is_correct: #{@is_correct}" # デバッグログの追加
-  
-    respond_to do |format|
-      format.html do
-        if @is_correct
-          Rails.logger.debug "Rendering correct template" # デバッグログの追加
-          render template: 'learning_progresses/correct'
-        else
-          flash[:correct_option] = correct_option
-          Rails.logger.debug "Rendering incorrect template with correct_option: #{correct_option}" # デバッグログの追加
-          render template: 'learning_progresses/incorrect'
-        end
-      end
-      format.turbo_stream do
-        if @is_correct
-          Rails.logger.debug "Rendering correct turbo_stream template" # デバッグログの追加
-          render template: 'learning_progresses/correct'
-        else
-          Rails.logger.debug "Rendering incorrect turbo_stream template with correct_option: #{correct_option}" # デバッグログの追加
-          render template: 'learning_progresses/incorrect', locals: { correct_option: correct_option }
-        end
-      end
+    if @options.blank?
+      # シノニムが見つからなかった場合は再度単語を取得
+      logger.info "No synonyms found for the word: #{@word_data['word']}. Fetching a new word."
+      next_question
+    else
+      render json: {
+        word: @word_data['word'],
+        options: @options,
+        correct_option: @correct_option
+      }
     end
   end
-  
-  
 
   private
 
-  def fetch_random_word
-    response = api_request("https://wordsapiv1.p.rapidapi.com/words/?random=true")
-    return JSON.parse(response.body) if response.is_a?(Net::HTTPSuccess)
+  def fetch_random_word(language = 'english')
+    url = case language
+          when 'english'
+            "https://wordsapiv1.p.rapidapi.com/words/?random=true"
+          when 'spanish'
+            # スペイン語のAPIエンドポイントを設定
+            "https://wordsapiv1.p.rapidapi.com/words/?random=true&language=es"
+          else
+            "https://wordsapiv1.p.rapidapi.com/words/?random=true"
+          end
 
+    response = api_request(url)
+    if response.is_a?(Net::HTTPSuccess)
+      JSON.parse(response.body)
+    else
+      Rails.logger.info("API response code: #{response.code}")
+      Rails.logger.info("API response message: #{response.message}")
+      Rails.logger.info("API response body: #{response.body}")
+      {}
+    end
+  rescue StandardError => e
+    Rails.logger.error("API request error: #{e.message}")
+    {}
   end
 
   def generate_options(word_data)
     result = word_data.dig('results', 0)
+    if result && result['synonyms'].present?
       correct_option = result['synonyms'].sample
       other_words = Array.new(3) { fetch_random_word&.dig('word') }.compact
+      Rails.logger.info("Generated options: #{other_words + [correct_option]}")
       (other_words + [correct_option]).shuffle
+    else
+      []
+    end
   end
 
-  def fetch_correct_synonyms(word)
-    response = api_request("https://wordsapiv1.p.rapidapi.com/words/#{URI.encode_www_form_component(word)}/synonyms")
-    return JSON.parse(response.body).fetch('synonyms', [])
+  def correct_option?(word_data, option)
+    result = word_data.dig('results', 0)
+    result && result['synonyms'] && result['synonyms'].include?(option)
   end
 
   def api_request(url)

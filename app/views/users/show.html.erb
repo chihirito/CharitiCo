@@ -1,4 +1,4 @@
-<h1><%= @user.name %>の学習内容</h1>
+<h1><%= @user.name %>さんの学習内容</h1>
 
 <div class="user-details">
   <div class="user-icon">
@@ -6,10 +6,10 @@
   </div>
   <div class="user-info">
     <p>名前: <%= @user.name %></p>
+    <p>コイン数: <%= @coins %></p>
   </div>
 </div>
 
-<h2>学習内容</h2>
 <ul>
   <% @learning_progresses.each do |progress| %>
     <li>
