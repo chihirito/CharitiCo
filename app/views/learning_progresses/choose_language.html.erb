@@ -1,0 +1,11 @@
+<div class="container mt-5">
+  <h1>Choose Your Learning Language</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <%= link_to 'Learn English', learning_progresses_path(language: 'english'), class: 'btn btn-lg btn-primary w-100 mb-3' %>
+    </div>
+    <div class="col-md-6">
+      <%= link_to 'Learn Spanish', learning_progresses_path(language: 'spanish'), class: 'btn btn-lg btn-primary w-100 mb-3' %>
+    </div>
+  </div>
+</div>

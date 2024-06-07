@@ -40,4 +40,13 @@
   background: linear-gradient(87deg, #0fa9e6 0, #1168e6 100%) !important;
 }
 
+.btn-pink {
+  background-color: #e91e63 !important; /* ピンク色 */
+  color: white !important; /* テキストの色を白に */
+}
+
+.btn-pink:hover {
+  background-color: #d81b60 !important; /* ホバー時の色 */
+}
+
 

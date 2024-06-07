@@ -2,7 +2,8 @@ class LearningProgressesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @word_data = fetch_random_word
+    @language = params[:language]
+    @word_data = fetch_random_word(@language)
     if @word_data.blank? || @word_data['word'].blank?
       flash[:alert] = 'Failed to load the question. Please try again.'
       redirect_to root_path
@@ -15,6 +16,9 @@ class LearningProgressesController < ApplicationController
         redirect_to root_path
       end
     end
+  end
+
+  def choose_language
   end
 
   def new
@@ -57,13 +61,21 @@ class LearningProgressesController < ApplicationController
       }
     end
   end
-  
-
 
   private
 
-  def fetch_random_word
-    response = api_request("https://wordsapiv1.p.rapidapi.com/words/?random=true")
+  def fetch_random_word(language = 'english')
+    url = case language
+          when 'english'
+            "https://wordsapiv1.p.rapidapi.com/words/?random=true"
+          when 'spanish'
+            # スペイン語のAPIエンドポイントを設定
+            "https://wordsapiv1.p.rapidapi.com/words/?random=true&language=es"
+          else
+            "https://wordsapiv1.p.rapidapi.com/words/?random=true"
+          end
+
+    response = api_request(url)
     if response.is_a?(Net::HTTPSuccess)
       JSON.parse(response.body)
     else
