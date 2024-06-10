@@ -1,0 +1,25 @@
+<!-- app/views/learning_progresses/spanish_learning.html.erb -->
+<h1>Learn Spanish</h1>
+<% if @word_data.present? && @word_data['word'].present? %>
+  <p>Choose the correct Spanish translation for the word: <strong class="word"><%= @word_data['word'] %></strong></p>
+  <% if @options.present? %>
+    <ul>
+      <% @options.each do |option| %>
+        <li>
+          <button class="option-button" data-option="<%= option %>"><%= option %></button>
+        </li>
+      <% end %>
+    </ul>
+    <input type="hidden" id="correct-option" value="<%= @correct_option %>">
+    <div id="result-popup" class="hidden">
+      <p id="result-message"></p>
+      <button id="close-popup">Close</button>
+      <button id="next-question" class="hidden">Next Question</button>
+    </div>
+    <p id="coins-display">Coins: <%= current_user.coins %></p>
+  <% else %>
+    <p>No options available.</p>
+  <% end %>
+<% else %>
+  <p>Failed to load the question. Please try again.</p>
+<% end %>

@@ -62,18 +62,49 @@ class LearningProgressesController < ApplicationController
     end
   end
 
+  def spanish_learning
+    @word_data = fetch_random_word
+    if @word_data.blank? || @word_data['word'].blank?
+      flash[:alert] = 'Failed to load the question. Please try again.'
+      redirect_to root_path
+    else
+      @options = generate_spanish_options(@word_data)
+      if @options.present?
+        @correct_option = @options.find { |option| correct_spanish_option?(@word_data, option) }
+      else
+        flash[:alert] = 'Failed to generate options. Please try again.'
+        redirect_to root_path
+      end
+    end
+  end
+
+  def spanish_next_question
+    @word_data = fetch_random_word
+    if @word_data.blank? || @word_data['word'].blank?
+      render json: { error: 'Failed to fetch a new word.' }, status: :unprocessable_entity
+      return
+    end
+
+    @options = generate_spanish_options(@word_data)
+    @correct_option = @options.find { |option| correct_spanish_option?(@word_data, option) }
+
+    if @options.blank?
+      # シノニムが見つからなかった場合は再度単語を取得
+      logger.info "No synonyms found for the word: #{@word_data['word']}. Fetching a new word."
+      spanish_next_question
+    else
+      render json: {
+        word: @word_data['word'],
+        options: @options,
+        correct_option: @correct_option
+      }
+    end
+  end
+
   private
 
   def fetch_random_word(language = 'english')
-    url = case language
-          when 'english'
-            "https://wordsapiv1.p.rapidapi.com/words/?random=true"
-          when 'spanish'
-            # スペイン語のAPIエンドポイントを設定
-            "https://wordsapiv1.p.rapidapi.com/words/?random=true&language=es"
-          else
-            "https://wordsapiv1.p.rapidapi.com/words/?random=true"
-          end
+    url = "https://wordsapiv1.p.rapidapi.com/words/?random=true"
 
     response = api_request(url)
     if response.is_a?(Net::HTTPSuccess)
@@ -122,5 +153,40 @@ class LearningProgressesController < ApplicationController
 
   def learning_progress_params
     params.require(:learning_progress).permit(:content, :progress)
+  end
+
+  def generate_spanish_options(word_data)
+    result = word_data.dig('results', 0)
+    if result && result['synonyms'].present?
+      correct_option = translate_to_spanish(result['synonyms'].sample)
+      other_words = Array.new(3) { translate_to_spanish(fetch_random_word&.dig('word')) }.compact
+      (other_words + [correct_option]).shuffle
+    else
+      []
+    end
+  end
+
+  def correct_spanish_option?(word_data, option)
+    result = word_data.dig('results', 0)
+    correct_option = translate_to_spanish(result['synonyms'].sample) if result && result['synonyms'].present?
+    correct_option == option
+  end
+
+  def translate_to_spanish(word)
+    api_key = 'AIzaSyBRuY34NeJgWGuiIfVT0Cki7YXVvW2CUDI'
+    url = URI("https://translation.googleapis.com/language/translate/v2?key=#{api_key}")
+    params = {
+      q: word,
+      target: 'es',
+      source: 'en'
+    }
+
+    response = Net::HTTP.post_form(url, params)
+    if response.is_a?(Net::HTTPSuccess)
+      JSON.parse(response.body).dig("data", "translations", 0, "translatedText")
+    else
+      Rails.logger.error("Translation API request error: #{response.message}")
+      word # 翻訳に失敗した場合は元の単語を返す
+    end
   end
 end

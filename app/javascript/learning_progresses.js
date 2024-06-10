@@ -1,11 +1,4 @@
 const initLearningProgress = () => {
-  const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-  if (!csrfTokenMeta) {
-    console.error("CSRF token not found");
-    return;
-  }
-  const csrfToken = csrfTokenMeta.getAttribute('content');
-
   const questionElement = document.querySelector('.question');
   if (questionElement) {
     const buttons = document.querySelectorAll('.option-button');
@@ -22,7 +15,7 @@ const initLearningProgress = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           },
           body: JSON.stringify({ word: word })
         });
@@ -39,7 +32,7 @@ const initLearningProgress = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           }
         });
         const data = await response.json();
@@ -49,6 +42,7 @@ const initLearningProgress = () => {
           buttons.forEach((button, index) => {
             button.textContent = newOptions[index];
             button.dataset.option = newOptions[index];
+            button.classList.remove('selected'); // Remove the selected class from all buttons
           });
           correctOptionElement.value = data.correct_option;
         } else {
@@ -62,8 +56,8 @@ const initLearningProgress = () => {
     buttons.forEach(button => {
       button.addEventListener('click', async (e) => {
         e.preventDefault();
-        buttons.forEach(btn => btn.classList.remove('selected'));
-        button.classList.add('selected');
+        buttons.forEach(btn => btn.classList.remove('selected')); // Remove the selected class from all buttons
+        button.classList.add('selected'); // Add the selected class to the clicked button
 
         if (button.dataset.option === correctOptionElement.value) {
           message.textContent = 'Correct!';

@@ -54,14 +54,19 @@
               Docs
             </a>
           </li>
-
           <% if user_signed_in? %>
             <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
               <%= link_to 'Start Learning', choose_language_path, class: 'btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0' %>
             </li>
+            <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
+              <%= link_to 'Logout', destroy_user_session_path, method: :delete, class: 'btn btn-sm bg-gradient-secondary mb-0 me-1 mt-2 mt-md-0' %>
+            </li>
           <% else %>
             <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
-              <%= link_to 'Start Learning', new_user_session_path, class: 'btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0' %>
+              <%= link_to 'Login', new_user_session_path, class: 'btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0' %>
+            </li>
+            <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
+              <%= link_to 'Sign Up', new_user_registration_path, class: 'btn btn-sm bg-gradient-secondary mb-0 me-1 mt-2 mt-md-0' %>
             </li>
           <% end %>
         </ul>
@@ -99,7 +104,7 @@
         <div class="col-md-3 mb-4 ms-auto">
           <div>
             <a href="https://www.creative-tim.com/product/material-kit">
-              <%= image_tag 'logo-ct-dark.png', class: 'mb-3 footer-logo', alt: 'main_logo' %> 
+              <%= image_tag 'logo-ct-dark.png', class: 'mb-3 footer-logo', alt: 'main_logo' %>
             </a>
             <h6 class="font-weight-bolder mb-4">Material Kit 2</h6>
           </div>

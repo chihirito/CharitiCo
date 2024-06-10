@@ -49,4 +49,9 @@
   background-color: #d81b60 !important; /* ホバー時の色 */
 }
 
+.option-button.selected {
+  background-color: #4caf50; /* 選択されたボタンの背景色 */
+  color: white; /* 選択されたボタンの文字色 */
+}
+
 
