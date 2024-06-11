@@ -1,15 +1,4 @@
-// app/javascript/application.js
-import Rails from "@rails/ujs";
-import Turbolinks from "turbolinks";
-import * as ActiveStorage from "@rails/activestorage";
-import "channels";
 
-Rails.start();
-Turbolinks.start();
-ActiveStorage.start();
-
-// 必要なJavaScriptファイルをインポート
-import "learning_progresses";
 
 // turboのメソッドを無効にする
 document.addEventListener('turbolinks:load', () => {
@@ -34,4 +23,5 @@ document.addEventListener('turbolinks:load', () => {
       document.body.appendChild(form);
       form.submit();
     });
- 
+  })
+})
