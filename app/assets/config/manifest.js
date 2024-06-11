@@ -5,4 +5,3 @@
 //= link_tree ../../../vendor/javascript .js
 //= link application.js
  //= link learning_progresses.js
-
