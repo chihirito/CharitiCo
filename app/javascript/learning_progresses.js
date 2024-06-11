@@ -1,4 +1,4 @@
-const initLearningProgress = () => {
+document.addEventListener("DOMContentLoaded", () => {
   const questionElement = document.querySelector('.question');
   if (questionElement) {
     const buttons = document.querySelectorAll('.option-button');
@@ -42,7 +42,6 @@ const initLearningProgress = () => {
           buttons.forEach((button, index) => {
             button.textContent = newOptions[index];
             button.dataset.option = newOptions[index];
-            button.classList.remove('selected'); // Remove the selected class from all buttons
           });
           correctOptionElement.value = data.correct_option;
         } else {
@@ -56,8 +55,8 @@ const initLearningProgress = () => {
     buttons.forEach(button => {
       button.addEventListener('click', async (e) => {
         e.preventDefault();
-        buttons.forEach(btn => btn.classList.remove('selected')); // Remove the selected class from all buttons
-        button.classList.add('selected'); // Add the selected class to the clicked button
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
 
         if (button.dataset.option === correctOptionElement.value) {
           message.textContent = 'Correct!';
@@ -83,7 +82,7 @@ const initLearningProgress = () => {
       await loadNextQuestion();
     });
   }
-};
+});
 
 // Turboのイベントリスナーを設定
 document.addEventListener("DOMContentLoaded", initLearningProgress);

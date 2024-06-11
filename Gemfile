@@ -84,3 +84,5 @@ gem "pry-rails"
 gem "active_storage_validations"
 gem "carrierwave", "~> 2.0"
 gem 'sassc-rails'
+gem 'rails-ujs'
+
