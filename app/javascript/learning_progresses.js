@@ -1,88 +1,69 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const questionElement = document.querySelector('.question');
-  if (questionElement) {
+document.addEventListener('turbolinks:load', () => {
+  // 共通の処理を関数として定義
+  const setupLearningPage = (language) => {
     const buttons = document.querySelectorAll('.option-button');
-    const popup = document.getElementById('result-popup');
-    const message = document.getElementById('result-message');
-    const closePopup = document.getElementById('close-popup');
-    const correctOptionElement = document.getElementById('correct-option');
-    const coinsDisplay = document.getElementById('coins-display');
+    const correctOption = document.getElementById('correct-option').value;
+    const resultPopup = document.getElementById('result-popup');
+    const resultMessage = document.getElementById('result-message');
     const nextQuestionButton = document.getElementById('next-question');
-
-    const incrementCoins = async (word) => {
-      try {
-        const response = await fetch('/learning_progresses/increment_coins', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          },
-          body: JSON.stringify({ word: word })
-        });
-        const data = await response.json();
-        coinsDisplay.textContent = `Coins: ${data.coins}`;
-      } catch (error) {
-        console.error('Error incrementing coins:', error);
-      }
-    };
-
-    const loadNextQuestion = async () => {
-      try {
-        const response = await fetch('/learning_progresses/next_question', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          document.querySelector('.word').textContent = data.word;
-          const newOptions = data.options;
-          buttons.forEach((button, index) => {
-            button.textContent = newOptions[index];
-            button.dataset.option = newOptions[index];
-          });
-          correctOptionElement.value = data.correct_option;
-        } else {
-          console.error('Error loading next question:', data.error);
-        }
-      } catch (error) {
-        console.error('Error loading next question:', error);
-      }
-    };
+    const closePopupButton = document.getElementById('close-popup');
+    const coinsDisplay = document.getElementById('coins-display');
 
     buttons.forEach(button => {
-      button.addEventListener('click', async (e) => {
-        e.preventDefault();
-        buttons.forEach(btn => btn.classList.remove('selected'));
-        button.classList.add('selected');
-
-        if (button.dataset.option === correctOptionElement.value) {
-          message.textContent = 'Correct!';
-          await incrementCoins(correctOptionElement.value);
-          nextQuestionButton.classList.remove('hidden');
+      button.addEventListener('click', (event) => {
+        const selectedOption = event.target.getAttribute('data-option');
+        if (selectedOption === correctOption) {
+          resultMessage.textContent = 'Correct!';
+          // コインを増やす処理
+          fetch('/learning_progresses/increment_coins', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            coinsDisplay.textContent = `Coins: ${data.coins}`;
+          });
         } else {
-          message.textContent = `Incorrect! The correct answer was ${correctOptionElement.value}.`;
-          nextQuestionButton.classList.add('hidden');
+          resultMessage.textContent = `Incorrect. The correct answer is ${correctOption}.`;
         }
-
-        popup.classList.remove('hidden');
+        resultPopup.classList.remove('hidden');
+        nextQuestionButton.classList.remove('hidden');
       });
     });
 
-    closePopup.addEventListener('click', (e) => {
-      e.preventDefault();
-      popup.classList.add('hidden');
+    closePopupButton.addEventListener('click', () => {
+      resultPopup.classList.add('hidden');
+      nextQuestionButton.classList.add('hidden');
     });
 
-    nextQuestionButton.addEventListener('click', async (e) => {
-      e.preventDefault();
-      popup.classList.add('hidden');
-      await loadNextQuestion();
+    nextQuestionButton.addEventListener('click', () => {
+      fetch(`/learning_progresses/next_question?language=${language}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            resultMessage.textContent = data.error;
+          } else {
+            document.querySelector('.word').textContent = data.word;
+            buttons.forEach((button, index) => {
+              button.textContent = data.options[index];
+              button.setAttribute('data-option', data.options[index]);
+            });
+            document.getElementById('correct-option').value = data.correct_option;
+            resultPopup.classList.add('hidden');
+            nextQuestionButton.classList.add('hidden');
+          }
+        });
     });
+  };
+
+  // ページごとに設定を呼び出す
+  if (document.querySelector('body.learning_progresses')) {
+    setupLearningPage('english');
+  }
+  if (document.querySelector('body.spanish_learning')) {
+    setupLearningPage('spanish');
   }
 });
-
-// Turboのイベントリスナーを設定
-document.addEventListener("DOMContentLoaded", initLearningProgress);
