@@ -51,7 +51,7 @@ gem "image_processing", "~> 1.2"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
-  gem "dotenv-rails", require: 'dotenv/rails'
+  gem "dotenv-rails"
 end
 
 group :development do
@@ -74,9 +74,9 @@ group :test do
 end
 
 # MySQLを使用するため、PostgreSQL用のpgは削除
-# group :production do
-#   gem "pg"
-# end
+group :production do
+  gem "pg"
+end
 
 gem "mini_magick"
 gem "devise"
@@ -84,3 +84,5 @@ gem "pry-rails"
 gem "active_storage_validations"
 gem "carrierwave", "~> 2.0"
 gem 'sassc-rails'
+gem 'rails-ujs'
+

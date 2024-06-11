@@ -1,21 +1,12 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html>
 <head>
-  <title>Hello, world!</title>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <!-- CSRF Token -->
+  <title>Your App Title</title>
   <%= csrf_meta_tags %>
-  <!-- Fonts and icons -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  <!-- Material Kit CSS -->
+  <%= csp_meta_tag %>
+
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload' %>
+  <%= javascript_include_tag 'application', 'data-turbo-track': 'reload' %>
 </head>
 
 <body>
@@ -54,14 +45,19 @@
               Docs
             </a>
           </li>
-
           <% if user_signed_in? %>
             <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
-              <%= link_to 'Start Learning', choose_language_path, class: 'btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0' %>
+              <%= link_to 'Start', choose_language_path, class: 'btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0' %>
+            </li>
+            <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
+              <%= button_to 'Logout', destroy_user_session_path, data: {turbo_method: :delete}, class: 'btn btn-sm bg-gradient-danger mb-0 me-1 mt-2 mt-md-0' %>
             </li>
           <% else %>
             <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
-              <%= link_to 'Start Learning', new_user_session_path, class: 'btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0' %>
+              <%= link_to 'Login', new_user_session_path, class: 'btn btn-sm bg-gradient-success mb-0 me-1 mt-2 mt-md-0' %>
+            </li>
+            <li class="nav-item ms-lg-auto my-auto ms-3 ms-lg-0 mt-2 mt-lg-0">
+              <%= link_to 'Sign Up', new_user_registration_path, class: 'btn btn-sm bg-gradient-info mb-0 me-1 mt-2 mt-md-0' %>
             </li>
           <% end %>
         </ul>
@@ -77,9 +73,9 @@
         <div class="col-md-8 mx-auto">
           <div class="text-center">
             <h1 class="text-white">
-              <%= link_to 'Learn & Change', root_path, class: 'text-white' %>
+              <%= link_to 'CharitiCo', root_path, class: 'text-white' %>
             </h1>
-            <h3 class="text-white">Expand your knowledge and make a global impact.</h3>
+            <h3 class="text-white">Your learning can change the world.</h3>
           </div>
         </div>
       </div>
@@ -99,7 +95,7 @@
         <div class="col-md-3 mb-4 ms-auto">
           <div>
             <a href="https://www.creative-tim.com/product/material-kit">
-              <%= image_tag 'logo-ct-dark.png', class: 'mb-3 footer-logo', alt: 'main_logo' %> 
+              <img src="./assets/img/logo-ct-dark.png" class="mb-3 footer-logo" alt="main_logo">
             </a>
             <h6 class="font-weight-bolder mb-4">Material Kit 2</h6>
           </div>
@@ -245,5 +241,4 @@
   </footer>
   <%= javascript_include_tag 'application', 'data-turbo-track': 'reload' %>
 </body>
-
 </html>

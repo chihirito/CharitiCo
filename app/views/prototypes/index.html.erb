@@ -1,7 +1,4 @@
-<h1>学習者一覧</h1>
-<div class="start-learning">
-  <%= link_to '学習を始める', learning_progresses_path, class: 'btn-primary', data: { turbo: false } %>
-</div>
+<h1>Learners List</h1>
 <div class="users-list">
   <% @users.each do |user| %>
     <div class="user-tile">

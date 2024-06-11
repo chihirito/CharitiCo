@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       get :incorrect 
       post :increment_coins
       get :next_question
+      get :spanish_next_question 
       get :choose_language 
     end
   end
@@ -21,4 +22,7 @@ Rails.application.routes.draw do
 
   # choose_languageアクションのルートを追加
   get 'choose_language', to: 'learning_progresses#choose_language', as: 'choose_language'
+
+  get 'spanish_learning', to: 'learning_progresses#spanish_learning', as: 'spanish_learning'
 end
+

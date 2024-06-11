@@ -1,11 +1,4 @@
-const initLearningProgress = () => {
-  const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-  if (!csrfTokenMeta) {
-    console.error("CSRF token not found");
-    return;
-  }
-  const csrfToken = csrfTokenMeta.getAttribute('content');
-
+document.addEventListener("DOMContentLoaded", () => {
   const questionElement = document.querySelector('.question');
   if (questionElement) {
     const buttons = document.querySelectorAll('.option-button');
@@ -22,7 +15,7 @@ const initLearningProgress = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           },
           body: JSON.stringify({ word: word })
         });
@@ -39,7 +32,7 @@ const initLearningProgress = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           }
         });
         const data = await response.json();
@@ -89,7 +82,7 @@ const initLearningProgress = () => {
       await loadNextQuestion();
     });
   }
-};
+});
 
 // Turboのイベントリスナーを設定
 document.addEventListener("DOMContentLoaded", initLearningProgress);

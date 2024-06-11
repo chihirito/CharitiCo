@@ -1,10 +1,24 @@
+default: &default
+  encoding: utf8
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
 development:
-  adapter: async
+  <<: *default
+  adapter: mysql2
+  username: root
+  password:
+  host: localhost
+  database: CharitiCo_development
 
 test:
-  adapter: test
+  <<: *default
+  adapter: mysql2
+  username: root
+  password:
+  host: localhost
+  database: CharitiCo_test
 
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: protospace_iiy_production
+  <<: *default
+  adapter: postgresql
+  url: <%= ENV['DATABASE_URL'] %>

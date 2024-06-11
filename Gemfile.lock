@@ -171,6 +171,7 @@ GEM
     parser (3.3.2.0)
       ast (~> 2.4.1)
       racc
+    pg (1.5.6)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -206,6 +207,8 @@ GEM
     rails-html-sanitizer (1.6.0)
       loofah (~> 2.21)
       nokogiri (~> 1.14)
+    rails-ujs (0.1.0)
+      railties (>= 3.1)
     railties (7.0.8.3)
       actionpack (= 7.0.8.3)
       activesupport (= 7.0.8.3)
@@ -312,9 +315,11 @@ DEPENDENCIES
   jbuilder
   mini_magick
   mysql2 (~> 0.5)
+  pg
   pry-rails
   puma (~> 5.0)
   rails (~> 7.0.0)
+  rails-ujs
   rubocop
   sassc-rails
   selenium-webdriver
