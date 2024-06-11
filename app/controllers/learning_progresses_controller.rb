@@ -4,6 +4,18 @@ class LearningProgressesController < ApplicationController
   def index
     @language = params[:language]
     @word_data = fetch_random_word(@language)
+    if @word_data.blank? || @word_data['word'].blank?
+      flash[:alert] = 'Failed to load the question. Please try again.'
+      redirect_to root_path
+    else
+      @options = generate_options(@word_data)
+      if @options.present?
+        @correct_option = @options.find { |option| correct_option?(@word_data, option) }
+      else
+        flash[:alert] = 'Failed to generate options. Please try again.'
+        redirect_to root_path
+      end
+    end
   end
 
   def choose_language
@@ -51,11 +63,20 @@ class LearningProgressesController < ApplicationController
   end
 
   def spanish_learning
-    Rails.logger.info("Entered spanish_learning action")
-    @word_data = fetch_random_word('spanish')
-    Rails.logger.info("Fetched word data: #{@word_data}")
+    @word_data = fetch_random_word
+    if @word_data.blank? || @word_data['word'].blank?
+      flash[:alert] = 'Failed to load the question. Please try again.'
+      redirect_to root_path
+    else
+      @options = generate_spanish_options(@word_data)
+      if @options.present?
+        @correct_option = @options.find { |option| correct_spanish_option?(@word_data, option) }
+      else
+        flash[:alert] = 'Failed to generate options. Please try again.'
+        redirect_to root_path
+      end
+    end
   end
-
 
   def spanish_next_question
     @word_data = fetch_random_word

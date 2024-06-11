@@ -54,18 +54,4 @@
   color: white; /* 選択されたボタンの文字色 */
 }
 
-/* ナビゲーションバーのリストスタイルをリセット */
-.navbar-nav {
-  list-style: none; /* リストスタイルを非表示にする */
-  padding-left: 0; /* 左のパディングをリセットする */
-}
-
-.navbar-nav .nav-item {
-  margin-right: 15px; /* 必要に応じてマージンを調整 */
-}
-
-.navbar-nav .nav-item a {
-  color: white; /* リンクの色を調整 */
-  text-decoration: none; /* アンダーラインを消す */
-}
 
